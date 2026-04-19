@@ -1,21 +1,20 @@
 # Sistema de Gestión de Inventario y Pedidos - Pre-Entrega Java
 
-Este proyecto es una aplicación de consola robusta desarrollada en Java 17 para la gestión de un inventario de productos y el procesamiento de pedidos de venta. Fue diseñado siguiendo principios de Programación Orientada a Objetos (POO) y buenas prácticas de desarrollo.
+Es una aplicación de consola desarrollada en Java 17 para gestionar un inventario de productos y procesar los pedidos de venta. Se diseño con principios de Programación Orientada a Objetos (POO) , código límpio y buenas prácticas.
 
 ## Características principales
 
 - **Gestión de Inventario (CRUD):** Permite listar, agregar, buscar, modificar y eliminar productos.
 - **Modelado con Herencia:** Implementación de clases especializadas (ej. `Bebida` que hereda de `Producto`) para manejar atributos específicos.
 - **Sistema de Pedidos Detallado:** Creación de pedidos con múltiples ítems (`LineaPedido`), cálculo automático de subtotales y descuentos por cantidad.
-- **Gestión de Estados:** Uso de `Enums` para controlar el flujo de los pedidos (`PENDIENTE`, `ENTREGADO`, `CANCELADO`) con orquestación automática de stock en caso de cancelaciones.
-- **Persistencia de Datos:** Almacenamiento persistente mediante archivos CSV utilizando la API `java.nio` (NIO.2).
+- **Conceptos de POO Aplicados:** Uso de encapsulamiento, herencia, polimorfismo (sobrescritura de `toString` y `equals`) y sobrecarga de métodos y constructores.
+- **Gestión de Estados y Stock:** Uso de `Enums` para controlar el flujo de los pedidos con orquestación automática de stock en caso de cancelaciones.
+- **Persistencia de Datos:** Almacenamiento persistente en archivos CSV automatizado mediante el uso de la API `java.nio` (NIO.2).
 - **Experiencia de Usuario (UX):** Interfaz de consola mejorada con validaciones de entrada, manejo de excepciones personalizadas y resaltado de errores mediante códigos de color ANSI.
 
 ## Tecnologías utilizadas
 
 - **Lenguaje:** Java 17 (JDK 17)
-- **Entorno:** Visual Studio Code
-- **Terminal:** Zsh / MSYS2
 - **Persistencia:** Archivos planos (CSV)
 
 ## Estructura del Proyecto
@@ -27,12 +26,12 @@ Este proyecto es una aplicación de consola robusta desarrollada en Java 17 para
 
 ## Ejecución
 
-Para compilar el proyecto:
+**Compilar:**
 ```bash
 javac -d bin src/**/*.java
 ```
 
-Para ejecutar la aplicación:
+**Ejecutar:**
 ```bash
 java -cp bin main.Main
 ```
@@ -41,4 +40,4 @@ java -cp bin main.Main
 Este proyecto está bajo la Licencia MIT. Para más detalles, consultá el archivo LICENSE.
 
 ---
-Desarrollado como parte de la cursada de Java Backend 26138 y como ensayo de estudio sin fines comerciales - 2026.
+Desarrollado como parte de la cursada de Java Backend 26138 como ensayo de estudio, sin fines comerciales - 2026.

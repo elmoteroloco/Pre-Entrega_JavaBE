@@ -97,7 +97,7 @@ public class Main {
                         service.listarProductos(inventario);
                     System.out.println("\n" + YELLOW + "=== MODIFICACION DE PRODUCTO ===" + RESET);
                         int idMod = leerInt(scanner, "Ingrese el ID del producto a modificar (o 'x' para cancelar): ", 1);
-                        Producto pMod = service.buscarProductoPorId(inventario, idMod);
+                        Producto pMod = service.buscarProducto(inventario, idMod);
                         if (pMod != null) {
                             System.out.println("Valores actuales: " + pMod);
                             System.out.print("Nuevo Nombre (o 'x' para cancelar): ");

@@ -8,6 +8,7 @@ import model.LineaPedido;
 import model.Pedido;
 import java.util.ArrayList;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.List;
 
@@ -30,11 +31,9 @@ public class ProductoService {
             System.out.println(RED + "Error: El nombre del producto no puede estar vacio." + RESET);
             return;
         }
-        for (Producto p : inventario) {
-            if (p.getNombre().equalsIgnoreCase(nombre)) {
-                System.out.println(RED + "Error: Ya existe un producto con el nombre '" + nombre + "'." + RESET);
-                return;
-            }
+        if (inventario.stream().anyMatch(p -> p.getNombre().equalsIgnoreCase(nombre))) {
+            System.out.println(RED + "Error: Ya existe un producto con el nombre '" + nombre + "'." + RESET);
+            return;
         }
         if (precio <= 0) {
             System.out.println(RED + "Error: El precio debe ser mayor a cero." + RESET);
@@ -80,7 +79,7 @@ public class ProductoService {
         }
     }
 
-    public Producto buscarProductoPorId(ArrayList<Producto> inventario, int id) {
+    public Producto buscarProducto(List<Producto> inventario, int id) {
         for (Producto p : inventario) {
             if (p.getId() == id) {
                 return p;
@@ -135,7 +134,7 @@ public class ProductoService {
 
     public void guardarCSV(ArrayList<Producto> inventario) {
         String ruta = "inventario.csv";
-        try (PrintWriter writer = new PrintWriter(new FileWriter(ruta))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get(ruta), StandardCharsets.UTF_8))) {
             for (Producto p : inventario) {
                 boolean esAlc = false;
                 if (p instanceof Bebida) {
@@ -153,7 +152,7 @@ public class ProductoService {
         Path ruta = Paths.get("inventario.csv");
         if (!Files.exists(ruta)) return;
         try {
-            List<String> lineas = Files.readAllLines(ruta);
+            List<String> lineas = Files.readAllLines(ruta, StandardCharsets.UTF_8);
             int maxId = 0;
             for (String linea : lineas) {
                 String[] datos = linea.split(",");
@@ -201,14 +200,14 @@ public class ProductoService {
     }
 
     public void guardarPedidosCSV() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("pedidos.csv"))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("pedidos.csv"), StandardCharsets.UTF_8))) {
             for (Pedido p : historialPedidos) {
                 writer.println(p.getIdPedido() + "," + p.getTotal() + "," + p.getTotalSinDescuento() + "," + p.getEstado());
             }
         } catch (IOException e) {
             System.out.println(RED + "Error al guardar pedidos: " + e.getMessage() + RESET);
         }
-        try (PrintWriter writer = new PrintWriter(new FileWriter("pedidos_detalle.csv"))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("pedidos_detalle.csv"), StandardCharsets.UTF_8))) {
             for (Pedido p : historialPedidos) {
                 for (LineaPedido lp : p.getLineas()) {
                     writer.println(p.getIdPedido() + "," + lp.getProducto().getId() + "," + lp.getCantidad() + "," + lp.getPrecioAplicado());
@@ -223,7 +222,7 @@ public class ProductoService {
         Path ruta = Paths.get("pedidos.csv");
         if (!Files.exists(ruta)) return;
         try {
-            List<String> lineas = Files.readAllLines(ruta);
+            List<String> lineas = Files.readAllLines(ruta, StandardCharsets.UTF_8);
             int maxId = 0;
             for (String linea : lineas) {
                 String[] datos = linea.split(",");
@@ -240,7 +239,7 @@ public class ProductoService {
 
             Path rutaDetalle = Paths.get("pedidos_detalle.csv");
             if (Files.exists(rutaDetalle)) {
-                List<String> lineasDetalle = Files.readAllLines(rutaDetalle);
+                List<String> lineasDetalle = Files.readAllLines(rutaDetalle, StandardCharsets.UTF_8);
                 for (String ld : lineasDetalle) {
                     String[] d = ld.split(",");
                     int idPed = Integer.parseInt(d[0]);
@@ -251,7 +250,7 @@ public class ProductoService {
                     Pedido ped = historialPedidos.stream()
                         .filter(h -> h.getIdPedido() == idPed)
                         .findFirst().orElse(null);
-                    Producto prod = buscarProductoPorId(inventario, idProd);
+                    Producto prod = buscarProducto(inventario, idProd);
 
                     if (ped != null && prod != null) {
                         ped.getLineas().add(new LineaPedido(prod, cant, prec));
