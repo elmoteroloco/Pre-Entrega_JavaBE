@@ -1,0 +1,12 @@
+*.class
+bin/
+.vscode/
+.settings/
+.classpath
+.project
+*.log
+inventario.csv
+pedidos.csv
+pedidos_detalle.csv
+.DS_Store
+Thumbs.db
