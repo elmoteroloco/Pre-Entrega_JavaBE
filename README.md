@@ -36,6 +36,10 @@ javac -d bin src/**/*.java
 java -cp bin main.Main
 ```
 
+## Diagrama del Sistema
+
+![Diagrama del Sistema](assets/Diagrama_sistema.png)
+
 ## Licencia
 Este proyecto está bajo la Licencia MIT. Para más detalles, consultá el archivo LICENSE.
 

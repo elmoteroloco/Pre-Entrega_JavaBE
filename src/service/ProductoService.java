@@ -210,7 +210,7 @@ public class ProductoService {
                     }
                     Producto p;
                     if (esAlc) {
-                    p = new Bebida(id, nombre, precio, stock, true, activo);
+                        p = new Bebida(id, nombre, precio, stock, true, activo);
                     } else {
                         p = new Producto(id, nombre, precio, stock, activo);
                     }

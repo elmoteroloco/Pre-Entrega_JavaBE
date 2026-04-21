@@ -78,7 +78,7 @@ public class Main {
                         break;
                     case 2:
                         service.listarProductos(inventario);
-                    System.out.println("\n" + YELLOW + "=== INGRESO DE NUEVO PRODUCTO ===" + RESET);
+                        System.out.println("\n" + YELLOW + "=== INGRESO DE NUEVO PRODUCTO ===" + RESET);
                         System.out.print("Nombre (o 'x' para cancelar): ");
                         String nombre = scanner.nextLine();
                         if (nombre.equalsIgnoreCase(TECLA_CANCELAR)) throw new CancelarException();
@@ -96,7 +96,7 @@ public class Main {
                         break;
                     case 4:
                         service.listarProductos(inventario);
-                    System.out.println("\n" + YELLOW + "=== MODIFICACION DE PRODUCTO ===" + RESET);
+                        System.out.println("\n" + YELLOW + "=== MODIFICACION DE PRODUCTO ===" + RESET);
                         int idMod = leerInt(scanner, "Ingrese el ID del producto a modificar (o 'x' para cancelar): ", 1);
                         Producto pMod = service.buscarProducto(inventario, idMod);
                         if (pMod != null) {
@@ -114,7 +114,7 @@ public class Main {
                         break;
                     case 5:
                         service.listarProductos(inventario);
-                    System.out.println("\n" + YELLOW + "=== ELIMINACION DE PRODUCTO ===" + RESET);
+                        System.out.println("\n" + YELLOW + "=== ELIMINACION DE PRODUCTO ===" + RESET);
                         int idEliminar = leerInt(scanner, "ID a eliminar (o 'x' para cancelar): ", 1);
                         System.out.print("¿Estás seguro que deseas eliminar el producto? (s/n): ");
                         if (scanner.nextLine().equalsIgnoreCase("s")) {
@@ -126,7 +126,7 @@ public class Main {
                         break;
                     case 6:
                         service.listarProductos(inventario);
-                    System.out.println("\n" + YELLOW + "=== PROCESO DE VENTA ===" + RESET);
+                        System.out.println("\n" + YELLOW + "=== PROCESO DE VENTA ===" + RESET);
                         Pedido nuevoPedido = new Pedido();
                         boolean cargando = true;
                         while (cargando) {
