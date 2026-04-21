@@ -31,8 +31,17 @@ public class ProductoService {
             System.out.println(RED + "Error: El nombre del producto no puede estar vacio." + RESET);
             return;
         }
-        if (inventario.stream().anyMatch(p -> p.getNombre().equalsIgnoreCase(nombre))) {
-            System.out.println(RED + "Error: Ya existe un producto con el nombre '" + nombre + "'." + RESET);
+        Producto existente = inventario.stream()
+            .filter(p -> p.getNombre().equalsIgnoreCase(nombre))
+            .findFirst()
+            .orElse(null);
+        if (existente != null) {
+            if (existente.isActivo()) {
+                System.out.println(RED + "Error: Ya existe un producto activo con el nombre '" + nombre + "'." + RESET);
+            } else {
+                System.out.println(YELLOW + "Aviso: Existe un producto inactivo con ese nombre (ID: " + existente.getId() + ").");
+                System.out.println("Podes reactivarlo usando la opcion 10 del menu." + RESET);
+            }
             return;
         }
         if (precio <= 0) {
@@ -61,8 +70,23 @@ public class ProductoService {
         System.out.printf("%-5s | %-25s | %-12s | %-8s%n", "ID", "Nombre", "Precio", "Stock");
         System.out.println("------------------------------------------------------------------");
         for (Producto p : inventario) {
-            String nombreDisplay = p.getNombre() + (p instanceof Bebida ? " (Alc)" : "");
-            System.out.printf("%-5d | %-25s | $%-11.2f | %-8d%n", p.getId(), nombreDisplay, p.getPrecio(), p.getStock());
+            if (p.isActivo()) {
+                String nombreDisplay = p.getNombre() + (p instanceof Bebida ? " (Alc)" : "");
+                System.out.printf("%-5d | %-25s | $%-11.2f | %-8d%n", p.getId(), nombreDisplay, p.getPrecio(), p.getStock());
+            }
+        }
+    }
+
+    public void listarProductosInactivos(ArrayList<Producto> inventario) {
+        List<Producto> inactivos = inventario.stream().filter(p -> !p.isActivo()).toList();
+        if (inactivos.isEmpty()) {
+            System.out.println("No hay productos inactivos.");
+            return;
+        }
+        System.out.printf("%-5s | %-25s | %-12s | %-8s%n", "ID", "Nombre", "Precio", "Stock");
+        System.out.println("------------------------------------------------------------------");
+        for (Producto p : inactivos) {
+            System.out.printf("%-5d | %-25s | $%-11.2f | %-8d%n", p.getId(), p.getNombre(), p.getPrecio(), p.getStock());
         }
     }
 
@@ -70,12 +94,16 @@ public class ProductoService {
         boolean encontrado = false;
         for (Producto p : inventario) {
             if (p.getNombre().equalsIgnoreCase(criterio) || String.valueOf(p.getId()).equals(criterio)) {
-                System.out.println("Producto encontrado: " + p);
+                if (p.isActivo()) {
+                    System.out.println("Producto encontrado: " + p);
+                } else {
+                    System.out.println(RED + "Producto encontrado (INACTIVO): " + p + RESET);
+                }
                 encontrado = true;
             }
         }
         if (!encontrado) {
-            System.out.println("No se encontro ningun producto con ese nombre.");
+            System.out.println("No se encontro ningun producto con ese nombre o ID.");
         }
     }
 
@@ -89,11 +117,22 @@ public class ProductoService {
     }
 
     public void eliminarProducto(ArrayList<Producto> inventario, int id) {
-        boolean eliminado = inventario.removeIf(p -> p.getId() == id);
-        if (eliminado) {
-            System.out.println("Producto con ID " + id + " eliminado.");
+        Producto p = buscarProducto(inventario, id);
+        if (p != null) {
+            p.setActivo(false);
+            System.out.println("Producto con ID " + id + " marcado como inactivo (borrado logico).");
         } else {
             System.out.println("No se encontro el ID " + id);
+        }
+    }
+
+    public void reactivarProducto(ArrayList<Producto> inventario, int id) {
+        Producto p = buscarProducto(inventario, id);
+        if (p != null && !p.isActivo()) {
+            p.setActivo(true);
+            System.out.println("Producto '" + p.getNombre() + "' reactivado con éxito.");
+        } else {
+            System.out.println(RED + "No se encontró un producto inactivo con ese ID." + RESET);
         }
     }
 
@@ -141,7 +180,7 @@ public class ProductoService {
                     Bebida b = (Bebida) p;
                     esAlc = b.isEsAlcoholica();
                 }
-                writer.println(p.getId() + "," + p.getNombre() + "," + p.getPrecio() + "," + p.getStock() + "," + esAlc);
+                writer.println(p.getId() + "," + p.getNombre() + "," + p.getPrecio() + "," + p.getStock() + "," + esAlc + "," + p.isActivo());
             }
         } catch (IOException e) {
             System.out.println(RED + "Error al guardar el archivo: " + e.getMessage() + RESET);
@@ -162,14 +201,18 @@ public class ProductoService {
                     double precio = Double.parseDouble(datos[2]);
                     int stock = Integer.parseInt(datos[3]);
                     boolean esAlc = false;
-                    if (datos.length == 5) {
+                    if (datos.length >= 5) {
                         esAlc = Boolean.parseBoolean(datos[4]);
+                    }
+                    boolean activo = true;
+                    if (datos.length == 6) {
+                        activo = Boolean.parseBoolean(datos[5]);
                     }
                     Producto p;
                     if (esAlc) {
-                        p = new Bebida(id, nombre, precio, stock, true);
+                    p = new Bebida(id, nombre, precio, stock, true, activo);
                     } else {
-                        p = new Producto(id, nombre, precio, stock);
+                        p = new Producto(id, nombre, precio, stock, activo);
                     }
                     inventario.add(p);
                     if (id > maxId) maxId = id;

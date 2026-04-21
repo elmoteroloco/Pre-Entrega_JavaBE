@@ -8,6 +8,7 @@ public class Producto {
     protected String nombre;
     protected double precio;
     protected int stock;
+    protected boolean activo = true;
 
     public Producto(String nombre, double precio, int stock) {
         this.id = ++contadorId;
@@ -21,6 +22,14 @@ public class Producto {
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
+    }
+
+    public Producto(int id, String nombre, double precio, int stock, boolean activo) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.stock = stock;
+        this.activo = activo;
     }
 
     public static void setContadorId(int nuevoValor) {
@@ -53,6 +62,14 @@ public class Producto {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public String toString() {

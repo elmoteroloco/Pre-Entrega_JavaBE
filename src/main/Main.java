@@ -66,6 +66,7 @@ public class Main {
             System.out.println("7. Listar Pedidos Realizados");
             System.out.println("8. Actualizar Estado de Pedido");
             System.out.println("9. Reporte de Ventas");
+            System.out.println("10. Reactivar Producto (Baja Logica)");
             System.out.println("0. Salir");
             System.out.print("Seleccioná una opción: ");
             try {
@@ -174,6 +175,13 @@ public class Main {
                         break;
                     case 9:
                         service.mostrarReporteVentas();
+                        break;
+                    case 10:
+                        System.out.println("\n" + YELLOW + "=== PRODUCTOS INACTIVOS ===" + RESET);
+                        service.listarProductosInactivos(inventario);
+                        int idReactivar = leerInt(scanner, "Ingrese ID a reactivar (o 'x' para cancelar): ", 1);
+                        service.reactivarProducto(inventario, idReactivar);
+                        service.guardarCSV(inventario);
                         break;
                     case 0:
                         System.out.println("Saliendo...");
