@@ -3,6 +3,9 @@ package model;
 import java.util.Objects;
 
 public class Producto {
+    private static final String RED = "\u001B[31m";
+    private static final String RESET = "\u001B[0m";
+
     private static int contadorId = 0;
     protected int id;
     protected String nombre;
@@ -45,6 +48,10 @@ public class Producto {
     }
 
     public void setNombre(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            System.out.println(RED + "Error: El nombre del producto no puede estar vacio." + RESET);
+            return;
+        }
         this.nombre = nombre;
     }
 
@@ -53,6 +60,10 @@ public class Producto {
     }
 
     public void setPrecio(double precio) {
+        if (precio <= 0) {
+            System.out.println(RED + "Error: El precio debe ser mayor a cero." + RESET);
+            return;
+        }
         this.precio = precio;
     }
 
@@ -61,6 +72,10 @@ public class Producto {
     }
 
     public void setStock(int stock) {
+        if (stock < 0) {
+            System.out.println(RED + "Error: El stock no puede ser negativo." + RESET);
+            return;
+        }
         this.stock = stock;
     }
 

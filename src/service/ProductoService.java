@@ -120,7 +120,7 @@ public class ProductoService {
         Producto p = buscarProducto(inventario, id);
         if (p != null) {
             p.setActivo(false);
-            System.out.println("Producto con ID " + id + " marcado como inactivo (borrado logico).");
+            System.out.println("El Producto con ID: " + id + " se marcó como inactivo.");
         } else {
             System.out.println("No se encontro el ID " + id);
         }
@@ -130,13 +130,25 @@ public class ProductoService {
         Producto p = buscarProducto(inventario, id);
         if (p != null && !p.isActivo()) {
             p.setActivo(true);
-            System.out.println("Producto '" + p.getNombre() + "' reactivado con éxito.");
+            System.out.println("El Producto '" + p.getNombre() + "' fue reactivado con éxito.");
         } else {
             System.out.println(RED + "No se encontró un producto inactivo con ese ID." + RESET);
         }
     }
 
     public void modificarProducto(ArrayList<Producto> inventario, int id, String nombre, double precio, int stock) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            System.out.println(RED + "Error: El nombre del producto no puede estar vacio." + RESET);
+            return;
+        }
+        if (precio <= 0) {
+            System.out.println(RED + "Error: El precio debe ser mayor a cero." + RESET);
+            return;
+        }
+        if (stock < 0) {
+            System.out.println(RED + "Error: El stock no puede ser negativo." + RESET);
+            return;
+        }
         for (Producto p : inventario) {
             if (p.getId() == id) {
                 p.setNombre(nombre);
@@ -153,7 +165,7 @@ public class ProductoService {
         for (Producto p : inventario) {
             if (p.getId() == id) {
                 if (p.getStock() < cantidad) {
-                    throw new StockInsuficienteException("Stock insuficiente para: " + p.getNombre());
+                    throw new StockInsuficienteException("Stock insuficiente de: " + p.getNombre());
                 }
                 double precioFinal = p.getPrecio();
                 if (cantidad > 100) {
@@ -167,7 +179,7 @@ public class ProductoService {
                 return precioFinal;
             }
         }
-        System.out.println(RED + "Producto con ID " + id + " no encontrado." + RESET);
+        System.out.println(RED + "El Producto con ID " + id + " no fue encontrado." + RESET);
         return 0;
     }
 
@@ -183,7 +195,7 @@ public class ProductoService {
                 writer.println(p.getId() + "," + p.getNombre() + "," + p.getPrecio() + "," + p.getStock() + "," + esAlc + "," + p.isActivo());
             }
         } catch (IOException e) {
-            System.out.println(RED + "Error al guardar el archivo: " + e.getMessage() + RESET);
+            System.out.println(RED + "Hubo un error al guardar el archivo: " + e.getMessage() + RESET);
         }
     }
 
@@ -223,10 +235,10 @@ public class ProductoService {
             Producto.setContadorId(maxId);
             return true;
         } catch (IOException e) {
-            System.out.println(RED + "Error al cargar el archivo: " + e.getMessage() + RESET);
+            System.out.println(RED + "Hubo un error al cargar el archivo: " + e.getMessage() + RESET);
             return false;
         } catch (Exception e) {
-            System.out.println(RED + "Error en el formato de datos." + RESET);
+            System.out.println(RED + "Hay un error en el formato de datos." + RESET);
             return false;
         }
     }
@@ -253,7 +265,7 @@ public class ProductoService {
                 writer.println(p.getIdPedido() + "," + p.getTotal() + "," + p.getTotalSinDescuento() + "," + p.getEstado());
             }
         } catch (IOException e) {
-            System.out.println(RED + "Error al guardar pedidos: " + e.getMessage() + RESET);
+            System.out.println(RED + "Hubo un error al guardar en el archivo de pedidos: " + e.getMessage() + RESET);
         }
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("pedidos_detalle.csv"), StandardCharsets.UTF_8))) {
             for (Pedido p : historialPedidos) {
@@ -262,7 +274,7 @@ public class ProductoService {
                 }
             }
         } catch (IOException e) {
-            System.out.println(RED + "Error al guardar detalles de pedidos." + RESET);
+            System.out.println(RED + "Hubo un error al guardar en el archivo de detalles del pedido ." + RESET);
         }
     }
 
@@ -326,7 +338,7 @@ public class ProductoService {
                         lp.getProducto().setStock(lp.getProducto().getStock() + lp.getCantidad());
                     }
                 } else if (p.getEstado() == EstadoPedido.CANCELADO && nuevoEstado == EstadoPedido.ENTREGADO) {
-                    System.out.println(RED + "No se puede reactivar un pedido ya cancelado (requiere validacion de stock)." + RESET);
+                    System.out.println(RED + "No se puede reactivar un pedido ya cancelado (no tiene validacion de stock). Se debe realizar un nuevo pedido." + RESET);
                     return;
                 } else if (p.getEstado() == nuevoEstado) {
                     System.out.println(YELLOW + "El pedido ya se encuentra en estado " + nuevoEstado + RESET);
