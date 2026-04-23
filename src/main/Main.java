@@ -51,8 +51,14 @@ public class Main {
     public static void main(String[] args) {
         ArrayList<Producto> inventario = new ArrayList<>();
         ProductoService service = new ProductoService();
-        service.cargarCSV(inventario);
-        service.cargarPedidosCSV(inventario);
+
+        if (!service.cargarCSV(inventario)) {
+            System.out.println(YELLOW + "[!] Advertencia: No se pudo cargar el inventario. Se iniciara un catalogo nuevo." + RESET);
+        }
+        if (!service.cargarPedidosCSV(inventario)) {
+            System.out.println(YELLOW + "[!] Advertencia: No se encontro historial de pedidos previo." + RESET);
+        }
+
         Scanner scanner = new Scanner(System.in);
         int opcion = -1;
         while (opcion != 0) {
@@ -67,6 +73,7 @@ public class Main {
             System.out.println("8. Actualizar Estado de Pedido");
             System.out.println("9. Reporte de Ventas");
             System.out.println("10. Reactivar Producto (Baja Logica)");
+            System.out.println("11. Recargar Datos desde CSV");
             System.out.println("0. Salir");
             System.out.print("Seleccioná una opción: ");
             try {
@@ -182,6 +189,16 @@ public class Main {
                         int idReactivar = leerInt(scanner, "Ingrese ID a reactivar (o 'x' para cancelar): ", 1);
                         service.reactivarProducto(inventario, idReactivar);
                         service.guardarCSV(inventario);
+                        break;
+                    case 11:
+                        System.out.println(YELLOW + "Recargando base de datos..." + RESET);
+                        boolean okInv = service.cargarCSV(inventario);
+                        boolean okPed = service.cargarPedidosCSV(inventario);
+                        if (okInv && okPed) {
+                            System.out.println("Datos sincronizados correctamente.");
+                        } else {
+                            System.out.println(RED + "Error: Algunos archivos no pudieron ser procesados." + RESET);
+                        }
                         break;
                     case 0:
                         System.out.println("Saliendo...");
