@@ -4,6 +4,7 @@ import model.Producto;
 import model.Pedido;
 import model.EstadoPedido;
 import service.ProductoService;
+import service.PersistenceService;
 import exceptions.StockInsuficienteException;
 import java.util.*;
 
@@ -51,11 +52,12 @@ public class Main {
     public static void main(String[] args) {
         ArrayList<Producto> inventario = new ArrayList<>();
         ProductoService service = new ProductoService();
+        PersistenceService persistence = new PersistenceService();
 
-        if (!service.cargarCSV(inventario)) {
+        if (!persistence.cargarInventarioCSV(inventario)) {
             System.out.println(YELLOW + "[!] Advertencia: No se pudo cargar el inventario. Se iniciara un catalogo nuevo." + RESET);
         }
-        if (!service.cargarPedidosCSV(inventario)) {
+        if (!persistence.cargarPedidosCSV(service.getHistorialPedidos(), inventario)) {
             System.out.println(YELLOW + "[!] Advertencia: No se encontro historial de pedidos previo." + RESET);
         }
 
@@ -94,7 +96,7 @@ public class Main {
                         System.out.print("¿Es una bebida alcohólica? (s/n): ");
                         boolean esAlc = scanner.nextLine().equalsIgnoreCase("s");
                         service.agregarProducto(inventario, nombre, precio, stock, esAlc);
-                        service.guardarCSV(inventario);
+                        persistence.guardarInventarioCSV(inventario);
                         break;
                     case 3:
                         System.out.print("Ingresar Nombre o ID para buscar: ");
@@ -114,7 +116,7 @@ public class Main {
                             double nPre = leerDouble(scanner, "Nuevo Precio: ", 0.01);
                             int nSto = leerInt(scanner, "Nuevo Stock: ", 0);
                             service.modificarProducto(inventario, idMod, nNom, nPre, nSto);
-                            service.guardarCSV(inventario);
+                            persistence.guardarInventarioCSV(inventario);
                         } else {
                             System.out.println(RED + "No se encontró el producto." + RESET);
                         }
@@ -126,7 +128,7 @@ public class Main {
                         System.out.print("¿Estás seguro de eliminar el producto? Esta acción es irreversible (s/n): ");
                         if (scanner.nextLine().equalsIgnoreCase("s")) {
                             service.eliminarProducto(inventario, idEliminar);
-                            service.guardarCSV(inventario);
+                            persistence.guardarInventarioCSV(inventario);
                         } else {
                             System.out.println("Eliminación cancelada.");
                         }
@@ -157,8 +159,8 @@ public class Main {
                             System.out.println("--------------------------");
                             System.out.printf("TOTAL FINAL: $%.2f%n", nuevoPedido.getTotal());
                             service.agregarPedidoAlHistorial(nuevoPedido);
-                            service.guardarCSV(inventario);
-                            service.guardarPedidosCSV();
+                            persistence.guardarInventarioCSV(inventario);
+                            persistence.guardarPedidosCSV(service.getHistorialPedidos());
                         } else {
                             System.out.println("\nPedido cancelado (no se agregaron productos).");
                         }
@@ -177,8 +179,8 @@ public class Main {
                         int estOpcion = leerInt(scanner, "Opcion: ", 1);
                         EstadoPedido nuevoEstado = EstadoPedido.values()[estOpcion - 1];
                         service.actualizarEstadoPedido(inventario, idPed, nuevoEstado);
-                        service.guardarCSV(inventario);
-                        service.guardarPedidosCSV();
+                        persistence.guardarInventarioCSV(inventario);
+                        persistence.guardarPedidosCSV(service.getHistorialPedidos());
                         break;
                     case 9:
                         service.mostrarReporteVentas();
@@ -188,12 +190,12 @@ public class Main {
                         service.listarProductosInactivos(inventario);
                         int idReactivar = leerInt(scanner, "Ingresar el ID del Producto a reactivar ('x' para cancelar): ", 1);
                         service.reactivarProducto(inventario, idReactivar);
-                        service.guardarCSV(inventario);
+                        persistence.guardarInventarioCSV(inventario);
                         break;
                     case 11:
                         System.out.println(YELLOW + "Recargando base de datos..." + RESET);
-                        boolean okInv = service.cargarCSV(inventario);
-                        boolean okPed = service.cargarPedidosCSV(inventario);
+                        boolean okInv = persistence.cargarInventarioCSV(inventario);
+                        boolean okPed = persistence.cargarPedidosCSV(service.getHistorialPedidos(), inventario);
                         if (okInv && okPed) {
                             System.out.println("Datos sincronizados correctamente.");
                         } else {

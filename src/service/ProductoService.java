@@ -7,9 +7,6 @@ import model.EstadoPedido;
 import model.LineaPedido;
 import model.Pedido;
 import java.util.ArrayList;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.util.List;
 
 public class ProductoService {
@@ -27,14 +24,11 @@ public class ProductoService {
     }
 
     public void agregarProducto(ArrayList<Producto> inventario, String nombre, double precio, int stock, boolean esAlc) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            System.out.println(RED + "Error: El nombre del producto no puede estar vacio." + RESET);
-            return;
-        }
         Producto existente = inventario.stream()
-            .filter(p -> p.getNombre().equalsIgnoreCase(nombre))
-            .findFirst()
-            .orElse(null);
+                .filter(p -> p.getNombre().equalsIgnoreCase(nombre))
+                .findFirst()
+                .orElse(null);
+
         if (existente != null) {
             if (existente.isActivo()) {
                 System.out.println(RED + "Error: Ya existe un producto activo con el nombre '" + nombre + "'." + RESET);
@@ -44,22 +38,18 @@ public class ProductoService {
             }
             return;
         }
-        if (precio <= 0) {
-            System.out.println(RED + "Error: El precio debe ser mayor a cero." + RESET);
-            return;
+        try {
+            Producto nuevo;
+            if (esAlc) {
+                nuevo = new Bebida(nombre, precio, stock, true);
+            } else {
+                nuevo = new Producto(nombre, precio, stock);
+            }
+            inventario.add(nuevo);
+            System.out.println("Se agregó el producto '" + nombre + "'.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
-        if (stock < 0) {
-            System.out.println(RED + "Error: El stock no puede ser negativo." + RESET);
-            return;
-        }
-        Producto nuevo;
-        if (esAlc) {
-            nuevo = new Bebida(nombre, precio, stock, true);
-        } else {
-            nuevo = new Producto(nombre, precio, stock);
-        }
-        inventario.add(nuevo);
-        System.out.println("Se agregó el producto '" + nombre + "'.");
     }
 
     public void listarProductos(ArrayList<Producto> inventario) {
@@ -137,24 +127,16 @@ public class ProductoService {
     }
 
     public void modificarProducto(ArrayList<Producto> inventario, int id, String nombre, double precio, int stock) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            System.out.println(RED + "Error: El nombre del producto no puede estar vacio." + RESET);
-            return;
-        }
-        if (precio <= 0) {
-            System.out.println(RED + "Error: El precio debe ser mayor a cero." + RESET);
-            return;
-        }
-        if (stock < 0) {
-            System.out.println(RED + "Error: El stock no puede ser negativo." + RESET);
-            return;
-        }
         for (Producto p : inventario) {
             if (p.getId() == id) {
-                p.setNombre(nombre);
-                p.setPrecio(precio);
-                p.setStock(stock);
-                System.out.println("Producto ID " + id + " actualizado correctamente.");
+                try {
+                    p.setNombre(nombre);
+                    p.setPrecio(precio);
+                    p.setStock(stock);
+                    System.out.println("Producto ID " + id + " actualizado correctamente.");
+                } catch (IllegalArgumentException e) {
+                    System.out.println(RED + "Error al modificar: " + e.getMessage() + RESET);
+                }
                 return;
             }
         }
@@ -164,83 +146,22 @@ public class ProductoService {
     public double procesarItemVenta(ArrayList<Producto> inventario, Pedido pedido, int id, int cantidad) throws StockInsuficienteException {
         for (Producto p : inventario) {
             if (p.getId() == id) {
-                if (p.getStock() < cantidad) {
-                    throw new StockInsuficienteException("Stock insuficiente de: " + p.getNombre());
-                }
+                if (!p.isActivo()) throw new StockInsuficienteException("El producto está inactivo.");
+                if (p.getStock() < cantidad) throw new StockInsuficienteException("Stock insuficiente para " + p.getNombre());
+
                 double precioFinal = p.getPrecio();
                 if (cantidad > 100) {
-                    precioFinal *= 0.80;
+                    precioFinal *= 0.8;
                 } else if (cantidad > 50) {
-                    precioFinal *= 0.90;
+                    precioFinal *= 0.9;
                 }
+
                 p.setStock(p.getStock() - cantidad);
                 pedido.agregarProducto(p, cantidad, precioFinal);
-                System.out.printf("Agregado: %s | Cantidad: %d | Subtotal: $%.2f%n", p.getNombre(), cantidad, (precioFinal * cantidad));
                 return precioFinal;
             }
         }
-        System.out.println(RED + "El Producto con ID " + id + " no fue encontrado." + RESET);
-        return 0;
-    }
-
-    public void guardarCSV(ArrayList<Producto> inventario) {
-        String ruta = "inventario.csv";
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get(ruta), StandardCharsets.UTF_8))) {
-            for (Producto p : inventario) {
-                boolean esAlc = false;
-                if (p instanceof Bebida) {
-                    Bebida b = (Bebida) p;
-                    esAlc = b.isEsAlcoholica();
-                }
-                writer.println(p.getId() + "," + p.getNombre() + "," + p.getPrecio() + "," + p.getStock() + "," + esAlc + "," + p.isActivo());
-            }
-        } catch (IOException e) {
-            System.out.println(RED + "Hubo un error al guardar el archivo: " + e.getMessage() + RESET);
-        }
-    }
-
-    public boolean cargarCSV(ArrayList<Producto> inventario) {
-        inventario.clear();
-        Producto.setContadorId(0);
-        Path ruta = Paths.get("inventario.csv");
-        if (!Files.exists(ruta)) return true;
-        try {
-            List<String> lineas = Files.readAllLines(ruta, StandardCharsets.UTF_8);
-            int maxId = 0;
-            for (String linea : lineas) {
-                String[] datos = linea.split(",");
-                if (datos.length >= 4) {
-                    int id = Integer.parseInt(datos[0]);
-                    String nombre = datos[1];
-                    double precio = Double.parseDouble(datos[2]);
-                    int stock = Integer.parseInt(datos[3]);
-                    boolean esAlc = false;
-                    if (datos.length >= 5) {
-                        esAlc = Boolean.parseBoolean(datos[4]);
-                    }
-                    boolean activo = true;
-                    if (datos.length == 6) {
-                        activo = Boolean.parseBoolean(datos[5]);
-                    }
-                    Producto p;
-                    if (esAlc) {
-                        p = new Bebida(id, nombre, precio, stock, true, activo);
-                    } else {
-                        p = new Producto(id, nombre, precio, stock, activo);
-                    }
-                    inventario.add(p);
-                    if (id > maxId) maxId = id;
-                }
-            }
-            Producto.setContadorId(maxId);
-            return true;
-        } catch (IOException e) {
-            System.out.println(RED + "Hubo un error al cargar el archivo: " + e.getMessage() + RESET);
-            return false;
-        } catch (Exception e) {
-            System.out.println(RED + "Hay un error en el formato de datos." + RESET);
-            return false;
-        }
+        throw new StockInsuficienteException("Producto no encontrado.");
     }
 
     public void listarPedidos() {
@@ -256,77 +177,6 @@ public class ProductoService {
                     lp.getProducto().getNombre(), lp.getCantidad(), (lp.getCantidad() * lp.getPrecioAplicado()));
             }
             System.out.println("---------------------------------------------------------------");
-        }
-    }
-
-    public void guardarPedidosCSV() {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("pedidos.csv"), StandardCharsets.UTF_8))) {
-            for (Pedido p : historialPedidos) {
-                writer.println(p.getIdPedido() + "," + p.getTotal() + "," + p.getTotalSinDescuento() + "," + p.getEstado());
-            }
-        } catch (IOException e) {
-            System.out.println(RED + "Hubo un error al guardar en el archivo de pedidos: " + e.getMessage() + RESET);
-        }
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("pedidos_detalle.csv"), StandardCharsets.UTF_8))) {
-            for (Pedido p : historialPedidos) {
-                for (LineaPedido lp : p.getLineas()) {
-                    writer.println(p.getIdPedido() + "," + lp.getProducto().getId() + "," + lp.getCantidad() + "," + lp.getPrecioAplicado());
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(RED + "Hubo un error al guardar en el archivo de detalles del pedido ." + RESET);
-        }
-    }
-
-    public boolean cargarPedidosCSV(ArrayList<Producto> inventario) {
-        historialPedidos.clear();
-        Pedido.setContadorPedido(0);
-        Path ruta = Paths.get("pedidos.csv");
-        if (!Files.exists(ruta)) return true;
-        if (inventario.isEmpty()) {
-            System.out.println(YELLOW + "Aviso: El inventario esta vacio. Los pedidos se cargaran sin detalle de productos." + RESET);
-        }
-
-        try {
-            List<String> lineas = Files.readAllLines(ruta, StandardCharsets.UTF_8);
-            int maxId = 0;
-            for (String linea : lineas) {
-                String[] datos = linea.split(",");
-                if (datos.length >= 3) {
-                    int id = Integer.parseInt(datos[0]);
-                    double total = Double.parseDouble(datos[1]);
-                    double totalSinD = Double.parseDouble(datos[2]);
-                    EstadoPedido estado = datos.length == 4 ? EstadoPedido.valueOf(datos[3]) : EstadoPedido.PENDIENTE;
-                    historialPedidos.add(new Pedido(id, total, totalSinD, estado));
-                    if (id > maxId) maxId = id;
-                }
-            }
-            Pedido.setContadorPedido(maxId);
-
-            Path rutaDetalle = Paths.get("pedidos_detalle.csv");
-            if (Files.exists(rutaDetalle)) {
-                List<String> lineasDetalle = Files.readAllLines(rutaDetalle, StandardCharsets.UTF_8);
-                for (String ld : lineasDetalle) {
-                    String[] d = ld.split(",");
-                    int idPed = Integer.parseInt(d[0]);
-                    int idProd = Integer.parseInt(d[1]);
-                    int cant = Integer.parseInt(d[2]);
-                    double prec = Double.parseDouble(d[3]);
-
-                    Pedido ped = historialPedidos.stream()
-                        .filter(h -> h.getIdPedido() == idPed)
-                        .findFirst().orElse(null);
-                    Producto prod = buscarProducto(inventario, idProd);
-
-                    if (ped != null && prod != null) {
-                        ped.getLineas().add(new LineaPedido(prod, cant, prec));
-                    }
-                }
-            }
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error al cargar pedidos.");
-            return false;
         }
     }
 

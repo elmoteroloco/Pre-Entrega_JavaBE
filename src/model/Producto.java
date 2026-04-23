@@ -3,9 +3,6 @@ package model;
 import java.util.Objects;
 
 public class Producto {
-    private static final String RED = "\u001B[31m";
-    private static final String RESET = "\u001B[0m";
-
     private static int contadorId = 0;
     protected int id;
     protected String nombre;
@@ -15,23 +12,23 @@ public class Producto {
 
     public Producto(String nombre, double precio, int stock) {
         this.id = ++contadorId;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.stock = stock;
+        setNombre(nombre);
+        setPrecio(precio);
+        setStock(stock);
     }
 
     public Producto(int id, String nombre, double precio, int stock) {
         this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.stock = stock;
+        setNombre(nombre);
+        setPrecio(precio);
+        setStock(stock);
     }
 
     public Producto(int id, String nombre, double precio, int stock, boolean activo) {
         this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.stock = stock;
+        setNombre(nombre);
+        setPrecio(precio);
+        setStock(stock);
         this.activo = activo;
     }
 
@@ -49,10 +46,9 @@ public class Producto {
 
     public void setNombre(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
-            System.out.println(RED + "Error: El nombre del producto no puede estar vacio." + RESET);
-            return;
+            throw new IllegalArgumentException("El nombre del producto no puede estar vacio.");
         }
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
     }
 
     public double getPrecio() {
@@ -61,8 +57,7 @@ public class Producto {
 
     public void setPrecio(double precio) {
         if (precio <= 0) {
-            System.out.println(RED + "Error: El precio debe ser mayor a cero." + RESET);
-            return;
+            throw new IllegalArgumentException("El precio debe ser mayor a cero.");
         }
         this.precio = precio;
     }
@@ -73,8 +68,7 @@ public class Producto {
 
     public void setStock(int stock) {
         if (stock < 0) {
-            System.out.println(RED + "Error: El stock no puede ser negativo." + RESET);
-            return;
+            throw new IllegalArgumentException("El stock no puede ser negativo.");
         }
         this.stock = stock;
     }
