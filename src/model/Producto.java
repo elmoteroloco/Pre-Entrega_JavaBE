@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.*;
 import java.util.Objects;
 
 public class Producto {
@@ -46,7 +47,7 @@ public class Producto {
 
     public void setNombre(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre del producto no puede estar vacio.");
+            throw new NombreInvalidoException("El nombre del producto no puede estar vacio.");
         }
         this.nombre = nombre.trim();
     }
@@ -57,7 +58,7 @@ public class Producto {
 
     public void setPrecio(double precio) {
         if (precio <= 0) {
-            throw new IllegalArgumentException("El precio debe ser mayor a cero.");
+            throw new PrecioInvalidoException("El precio debe ser mayor a cero.");
         }
         this.precio = precio;
     }
@@ -68,7 +69,7 @@ public class Producto {
 
     public void setStock(int stock) {
         if (stock < 0) {
-            throw new IllegalArgumentException("El stock no puede ser negativo.");
+            throw new StockInvalidoException("El stock no puede ser negativo.");
         }
         this.stock = stock;
     }

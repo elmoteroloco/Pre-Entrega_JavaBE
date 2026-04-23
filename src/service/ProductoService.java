@@ -1,6 +1,6 @@
 package service;
 
-import exceptions.StockInsuficienteException;
+import exceptions.*;
 import model.Producto;
 import model.Bebida;
 import model.EstadoPedido;
@@ -47,7 +47,7 @@ public class ProductoService {
             }
             inventario.add(nuevo);
             System.out.println("Se agregó el producto '" + nombre + "'.");
-        } catch (IllegalArgumentException e) {
+        } catch (ValidacionProductoException e) {
             System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
     }
@@ -134,7 +134,7 @@ public class ProductoService {
                     p.setPrecio(precio);
                     p.setStock(stock);
                     System.out.println("Producto ID " + id + " actualizado correctamente.");
-                } catch (IllegalArgumentException e) {
+                } catch (ValidacionProductoException e) {
                     System.out.println(RED + "Error al modificar: " + e.getMessage() + RESET);
                 }
                 return;
