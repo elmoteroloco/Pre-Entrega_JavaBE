@@ -187,9 +187,11 @@ public class ProductoService {
         }
     }
 
-    public void cargarCSV(ArrayList<Producto> inventario) {
+    public boolean cargarCSV(ArrayList<Producto> inventario) {
+        inventario.clear();
+        Producto.setContadorId(0);
         Path ruta = Paths.get("inventario.csv");
-        if (!Files.exists(ruta)) return;
+        if (!Files.exists(ruta)) return true;
         try {
             List<String> lineas = Files.readAllLines(ruta, StandardCharsets.UTF_8);
             int maxId = 0;
@@ -219,10 +221,13 @@ public class ProductoService {
                 }
             }
             Producto.setContadorId(maxId);
+            return true;
         } catch (IOException e) {
             System.out.println(RED + "Error al cargar el archivo: " + e.getMessage() + RESET);
+            return false;
         } catch (Exception e) {
             System.out.println(RED + "Error en el formato de datos." + RESET);
+            return false;
         }
     }
 
@@ -261,9 +266,15 @@ public class ProductoService {
         }
     }
 
-    public void cargarPedidosCSV(ArrayList<Producto> inventario) {
+    public boolean cargarPedidosCSV(ArrayList<Producto> inventario) {
+        historialPedidos.clear();
+        Pedido.setContadorPedido(0);
         Path ruta = Paths.get("pedidos.csv");
-        if (!Files.exists(ruta)) return;
+        if (!Files.exists(ruta)) return true;
+        if (inventario.isEmpty()) {
+            System.out.println(YELLOW + "Aviso: El inventario esta vacio. Los pedidos se cargaran sin detalle de productos." + RESET);
+        }
+
         try {
             List<String> lineas = Files.readAllLines(ruta, StandardCharsets.UTF_8);
             int maxId = 0;
@@ -300,8 +311,10 @@ public class ProductoService {
                     }
                 }
             }
+            return true;
         } catch (Exception e) {
             System.out.println("Error al cargar pedidos.");
+            return false;
         }
     }
 
@@ -312,8 +325,11 @@ public class ProductoService {
                     for (LineaPedido lp : p.getLineas()) {
                         lp.getProducto().setStock(lp.getProducto().getStock() + lp.getCantidad());
                     }
-                } else if (p.getEstado() == EstadoPedido.CANCELADO && nuevoEstado != EstadoPedido.CANCELADO) {
+                } else if (p.getEstado() == EstadoPedido.CANCELADO && nuevoEstado == EstadoPedido.ENTREGADO) {
                     System.out.println(RED + "No se puede reactivar un pedido ya cancelado (requiere validacion de stock)." + RESET);
+                    return;
+                } else if (p.getEstado() == nuevoEstado) {
+                    System.out.println(YELLOW + "El pedido ya se encuentra en estado " + nuevoEstado + RESET);
                     return;
                 }
                 p.setEstado(nuevoEstado);
