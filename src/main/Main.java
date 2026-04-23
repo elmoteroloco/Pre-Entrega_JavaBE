@@ -1,18 +1,13 @@
 package main;
 
-import model.Producto;
-import model.Pedido;
-import model.EstadoPedido;
-import service.ProductoService;
-import service.PersistenceService;
-import exceptions.StockInsuficienteException;
+import model.*;
+import service.*;
+import view.ConsoleView;
+import exceptions.*;
 import java.util.*;
 
 public class Main {
     private static class CancelarException extends RuntimeException {}
-    private static final String RED = "\u001B[31m";
-    private static final String YELLOW = "\u001B[33m";
-    private static final String RESET = "\u001B[0m";
     private static final String TECLA_CANCELAR = "x";
 
     private static int leerInt(Scanner sc, String mensaje, int min) {
@@ -24,10 +19,8 @@ public class Main {
                 int val = Integer.parseInt(input);
                 if (val < min) throw new IllegalArgumentException();
                 return val;
-            } catch (NumberFormatException e) {
-                System.out.println(RED + "Error: Ingrese un numero entero valido." + RESET);
-            } catch (IllegalArgumentException e) {
-                System.out.println(RED + "Error: El valor debe ser mayor o igual a " + min + RESET);
+            } catch (Exception e) {
+                System.out.println("\u001B[31mError: Ingrese un numero valido mayor o igual a " + min + "\u001B[0m");
             }
         }
     }
@@ -41,10 +34,8 @@ public class Main {
                 double val = Double.parseDouble(input);
                 if (val < min) throw new IllegalArgumentException();
                 return val;
-            } catch (NumberFormatException e) {
-                System.out.println(RED + "Error: Ingrese un valor numerico valido (ej: 100.50)." + RESET);
-            } catch (IllegalArgumentException e) {
-                System.out.println(RED + "Error: El valor debe ser mayor o igual a " + min + RESET);
+            } catch (Exception e) {
+                System.out.println("\u001B[31mError: Ingrese un valor numerico valido mayor o igual a " + min + "\u001B[0m");
             }
         }
     }
@@ -53,13 +44,10 @@ public class Main {
         ArrayList<Producto> inventario = new ArrayList<>();
         ProductoService service = new ProductoService();
         PersistenceService persistence = new PersistenceService();
+        ConsoleView view = new ConsoleView();
 
-        if (!persistence.cargarInventarioCSV(inventario)) {
-            System.out.println(YELLOW + "[!] Advertencia: No se pudo cargar el inventario. Se iniciara un catalogo nuevo." + RESET);
-        }
-        if (!persistence.cargarPedidosCSV(service.getHistorialPedidos(), inventario)) {
-            System.out.println(YELLOW + "[!] Advertencia: No se encontro historial de pedidos previo." + RESET);
-        }
+        persistence.cargarInventarioCSV(inventario);
+        persistence.cargarPedidosCSV(service.getHistorialPedidos(), inventario);
 
         Scanner scanner = new Scanner(System.in);
         int opcion = -1;
@@ -75,19 +63,15 @@ public class Main {
             System.out.println("8. Actualizar Estado de Pedido");
             System.out.println("9. Reporte de Ventas");
             System.out.println("10. Reactivar Producto");
-            System.out.println("11. Recargar Datos desde CSV");
             System.out.println("0. Salir");
             System.out.print("Seleccioná una opción: ");
             try {
                 opcion = leerInt(scanner, "", 0);
                 switch (opcion) {
                     case 1:
-                        System.out.println("\n--- Listado ---");
-                        service.listarProductos(inventario);
+                        view.mostrarCatalogo(inventario);
                         break;
                     case 2:
-                        service.listarProductos(inventario);
-                        System.out.println("\n" + YELLOW + "=== INGRESO DE NUEVO PRODUCTO ===" + RESET);
                         System.out.print("Nombre ('x' para cancelar): ");
                         String nombre = scanner.nextLine();
                         if (nombre.equalsIgnoreCase(TECLA_CANCELAR)) throw new CancelarException();
@@ -97,122 +81,76 @@ public class Main {
                         boolean esAlc = scanner.nextLine().equalsIgnoreCase("s");
                         service.agregarProducto(inventario, nombre, precio, stock, esAlc);
                         persistence.guardarInventarioCSV(inventario);
+                        view.mostrarExito("Producto agregado correctamente.");
                         break;
                     case 3:
                         System.out.print("Ingresar Nombre o ID para buscar: ");
-                        String criterio = scanner.nextLine();
-                        service.buscarProducto(inventario, criterio);
+                        String crit = scanner.nextLine();
+                        Producto pBuscado = service.buscarProductoPorCriterio(inventario, crit);
+                        if (pBuscado != null) view.mostrarMensaje("Encontrado: " + pBuscado);
+                        else view.mostrarError("No se encontro el producto.");
                         break;
                     case 4:
-                        service.listarProductos(inventario);
-                        System.out.println("\n" + YELLOW + "=== MODIFICACION DE PRODUCTO ===" + RESET);
-                        int idMod = leerInt(scanner, "Ingresar el ID del producto a modificar ('x' para cancelar): ", 1);
-                        Producto pMod = service.buscarProducto(inventario, idMod);
-                        if (pMod != null) {
-                            System.out.println("Valores actuales: " + pMod);
-                            System.out.print("Nuevo Nombre ('x' para cancelar): ");
-                            String nNom = scanner.nextLine();
-                            if (nNom.equalsIgnoreCase(TECLA_CANCELAR)) throw new CancelarException();
-                            double nPre = leerDouble(scanner, "Nuevo Precio: ", 0.01);
-                            int nSto = leerInt(scanner, "Nuevo Stock: ", 0);
-                            service.modificarProducto(inventario, idMod, nNom, nPre, nSto);
-                            persistence.guardarInventarioCSV(inventario);
-                        } else {
-                            System.out.println(RED + "No se encontró el producto." + RESET);
-                        }
+                        int idMod = leerInt(scanner, "ID a modificar: ", 1);
+                        String nNom = scanner.nextLine();
+                        double nPre = leerDouble(scanner, "Nuevo Precio: ", 0.01);
+                        int nSto = leerInt(scanner, "Nuevo Stock: ", 0);
+                        service.modificarProducto(inventario, idMod, nNom, nPre, nSto);
+                        persistence.guardarInventarioCSV(inventario);
+                        view.mostrarExito("Producto actualizado.");
                         break;
                     case 5:
-                        service.listarProductos(inventario);
-                        System.out.println("\n" + YELLOW + "=== ELIMINACION DE PRODUCTO ===" + RESET);
-                        int idEliminar = leerInt(scanner, "ID a eliminar ('x' para cancelar): ", 1);
-                        System.out.print("¿Estás seguro de eliminar el producto? Esta acción es irreversible (s/n): ");
-                        if (scanner.nextLine().equalsIgnoreCase("s")) {
-                            service.eliminarProducto(inventario, idEliminar);
-                            persistence.guardarInventarioCSV(inventario);
-                        } else {
-                            System.out.println("Eliminación cancelada.");
-                        }
+                        int idElim = leerInt(scanner, "ID a eliminar: ", 1);
+                        service.eliminarProducto(inventario, idElim);
+                        persistence.guardarInventarioCSV(inventario);
+                        view.mostrarExito("Producto desactivado.");
                         break;
                     case 6:
-                        service.listarProductos(inventario);
-                        System.out.println("\n" + YELLOW + "=== PROCESO DE VENTA ===" + RESET);
-                        Pedido nuevoPedido = new Pedido();
+                        Pedido nPed = new Pedido();
                         boolean cargando = true;
                         while (cargando) {
-                            int idProd = leerInt(scanner, "ID del producto (0 para finalizar, 'x' para cancelar): ", 0);
+                            int idProd = leerInt(scanner, "ID (0 para terminar): ", 0);
                             if (idProd == 0) break;
                             int cant = leerInt(scanner, "Cantidad: ", 1);
-                            try {
-                                service.procesarItemVenta(inventario, nuevoPedido, idProd, cant);
-                            } catch (StockInsuficienteException e) {
-                                System.out.println(RED + "Error de Stock: " + e.getMessage() + RESET);
-                            }
-                            System.out.print("¿Agregar otro producto al pedido? (s/n): ");
-                            if (!scanner.nextLine().equalsIgnoreCase("s")) {
-                                cargando = false;
-                            }
+                            try { service.procesarItemVenta(inventario, nPed, idProd, cant); }
+                            catch (Exception e) { view.mostrarError(e.getMessage()); }
                         }
-                        if (!nuevoPedido.getLineas().isEmpty()) {
-                            System.out.println("\n--- RESUMEN DEL PEDIDO ---");
-                            System.out.printf("Importe Bruto: $%.2f%n", nuevoPedido.getTotalSinDescuento());
-                            System.out.printf("Descuentos aplicados: -$%.2f%n", nuevoPedido.getAhorroTotal());
-                            System.out.println("--------------------------");
-                            System.out.printf("TOTAL FINAL: $%.2f%n", nuevoPedido.getTotal());
-                            service.agregarPedidoAlHistorial(nuevoPedido);
+                        if (!nPed.getLineas().isEmpty()) {
+                            service.agregarPedidoAlHistorial(nPed);
                             persistence.guardarInventarioCSV(inventario);
                             persistence.guardarPedidosCSV(service.getHistorialPedidos());
-                        } else {
-                            System.out.println("\nPedido cancelado (no se agregaron productos).");
+                            view.mostrarExito("Pedido registrado. Total: $" + nPed.getTotal());
                         }
                         break;
                     case 7:
-                        service.listarPedidos();
+                        view.mostrarHistorialPedidos(service.getHistorialPedidos());
                         break;
                     case 8:
-                        service.listarPedidos();
-                        System.out.println("\n" + YELLOW + "=== ACTUALIZAR ESTADO DE PEDIDO ===" + RESET);
-                        int idPed = leerInt(scanner, "ID del pedido a modificar ('x' para cancelar): ", 1);
-                        System.out.println("Seleccionar el nuevo estado:");
-                        System.out.println("1. PENDIENTE");
-                        System.out.println("2. ENTREGADO");
-                        System.out.println("3. CANCELADO");
-                        int estOpcion = leerInt(scanner, "Opcion: ", 1);
-                        EstadoPedido nuevoEstado = EstadoPedido.values()[estOpcion - 1];
-                        service.actualizarEstadoPedido(inventario, idPed, nuevoEstado);
+                        int idPed = leerInt(scanner, "ID Pedido: ", 1);
+                        int est = leerInt(scanner, "1.PENDIENTE 2.ENTREGADO 3.CANCELADO: ", 1);
+                        service.actualizarEstadoPedido(inventario, idPed, EstadoPedido.values()[est-1]);
                         persistence.guardarInventarioCSV(inventario);
                         persistence.guardarPedidosCSV(service.getHistorialPedidos());
+                        view.mostrarExito("Estado actualizado.");
                         break;
                     case 9:
-                        service.mostrarReporteVentas();
+                        double[] datos = service.calcularDatosReporte();
+                        view.mostrarReporte(datos[0], datos[1], (int)datos[2]);
                         break;
                     case 10:
-                        System.out.println("\n" + YELLOW + "=== PRODUCTOS INACTIVOS ===" + RESET);
-                        service.listarProductosInactivos(inventario);
-                        int idReactivar = leerInt(scanner, "Ingresar el ID del Producto a reactivar ('x' para cancelar): ", 1);
-                        service.reactivarProducto(inventario, idReactivar);
+                        view.mostrarInactivos(inventario);
+                        int idReac = leerInt(scanner, "ID a reactivar: ", 1);
+                        service.reactivarProducto(inventario, idReac);
                         persistence.guardarInventarioCSV(inventario);
+                        view.mostrarExito("Producto reactivado.");
                         break;
-                    case 11:
-                        System.out.println(YELLOW + "Recargando base de datos..." + RESET);
-                        boolean okInv = persistence.cargarInventarioCSV(inventario);
-                        boolean okPed = persistence.cargarPedidosCSV(service.getHistorialPedidos(), inventario);
-                        if (okInv && okPed) {
-                            System.out.println("Datos sincronizados correctamente.");
-                        } else {
-                            System.out.println(RED + "Error: Algunos archivos no pudieron ser procesados." + RESET);
-                        }
-                        break;
-                    case 0:
-                        System.out.println("Saliendo...");
-                        break;
-                    default:
-                        System.out.println(RED + "Opcion no valida." + RESET);
                 }
             } catch (CancelarException e) {
-                System.out.println("\n" + YELLOW + "[!] Operacion cancelada por el usuario. Volviendo al menu..." + RESET);
-                opcion = -1;
+                view.mostrarAviso("Operacion cancelada.");
+            } catch (ValidacionProductoException e) {
+                view.mostrarError(e.getMessage());
             } catch (Exception e) {
-                System.out.println(RED + "Error: Se ingreso un dato invalido." + RESET);
+                view.mostrarError("Ocurrio un error inesperado.");
             }
         }
         scanner.close();
