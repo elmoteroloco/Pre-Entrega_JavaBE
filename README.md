@@ -4,7 +4,7 @@ Es una aplicación de consola desarrollada en Java 17 para gestionar un inventar
 
 ## Características principales
 
-**Gestión de Inventario (CRUD):** Permite listar, agregar, buscar, modificar, eliminar (desactivar) y reactivar *productos*, realizar, listar, entregar y cancelar *pedidos* y reliza un reporte de ventas mostrando el capital efectivo (*pedidos entregados*) y el crédito (*pedidos pendientes*) de las actividades realizadas. La eliminación es lógica (desactivación o "soft-delete"), permitiendo la reactivación de productos para mantener la integridad del historial de pedidos mediante la identidad consecutiva de los productos.
+**Gestión de Inventario (CRUD):** Permite listar, agregar, buscar, modificar, eliminar (desactivar) y reactivar *productos*, realizar, listar, entregar y cancelar *pedidos* y realiza un reporte de ventas mostrando el capital efectivo (*pedidos entregados*) y el crédito (*pedidos pendientes*) de las actividades realizadas. La eliminación es lógica (desactivación o "soft-delete"), permitiendo la reactivación de productos para mantener la integridad del historial de pedidos mediante la identidad de los mismos.
 
 **Arquitectura Basada en POO:**
     - **Encapsulamiento** (validaciones en setters)
@@ -14,11 +14,11 @@ Es una aplicación de consola desarrollada en Java 17 para gestionar un inventar
 
 **Sistema de Pedidos y Lógica de Negocio:** Gestión de pedidos con múltiples líneas, cálculo automático de descuentos progresivos (10% y 20%) y orquestación de stock según el estado del pedido.
 
-**Arquitectura Modular (SoC):** Separación de responsabilidades mediante Servicios (`ProductoService`, `PersistenceService`) y Vista (`ConsoleView`), siguiendo principios de bajo acoplamiento.
+**Arquitectura Modular (SoC):** Separación de responsabilidades mediante Servicios (`ProductoService`, `PersistenceService`) y Vista (`ConsoleView`), siguiendo principios de "bajo acoplamiento".
 
 **Control de Flujo con Enums:** Uso de `EstadoPedido` para manejar el ciclo de vida de las ventas y generar reportes de caja precisos.
 
-**Persistencia de Datos Robusta:** Almacenamiento en múltiples archivos CSV mediante la API `java.nio`, garantizando que la identidad de los productos se mantenga consistente.
+**Persistencia de Datos:** Almacenamiento en archivos CSV mediante la API `java.nio`, consiguiendo que la identidad de los productos se mantenga consistente.
 
 **Experiencia de Usuario (UX):** Interfaz de consola mejorada con validaciones de entrada, manejo de excepciones personalizadas y resaltado de errores mediante códigos de color ANSI.
 
@@ -30,10 +30,11 @@ Es una aplicación de consola desarrollada en Java 17 para gestionar un inventar
 ## Estructura del Proyecto
 
 - `src/model`: Contiene las entidades de datos (`Producto`, `Bebida`, `Pedido`, `LineaPedido`, `EstadoPedido`).
+- `src/controller`: Orquestación y control del flujo de la interfaz de usuario (`MenuController`).
 - `src/service`: Lógica de negocio (`ProductoService`) y servicios de persistencia (`PersistenceService`).
 - `src/view`: Manejo de la interfaz de usuario por consola (`ConsoleView`).
 - `src/exceptions`: Jerarquía de excepciones personalizadas (`ValidacionProductoException`, `StockInsuficienteException`).
-- `src/main`: Punto de entrada de la aplicación (`Main`).
+- `src/main`: Clase de arranque que inicializa las dependencias (`Main`).
 
 ## Ejecución
 
@@ -72,6 +73,7 @@ classDiagram
         -double totalSinDescuento
         -EstadoPedido estado
         +agregarProducto(Producto, int, double) void
+        +getAhorroTotal() double
     }
 
     class LineaPedido {
@@ -89,8 +91,11 @@ classDiagram
 
     class ProductoService {
         -ArrayList~Pedido~ historialPedidos
+        +getHistorialPedidos() ArrayList~Pedido~
+        +agregarPedidoAlHistorial(Pedido) void
         +agregarProducto(ArrayList, String, double, int, boolean) void
         +buscarProductoPorCriterio(List, String) Producto
+        +buscarProducto(List, int) Producto
         +modificarProducto(ArrayList, int, String, double, int) void
         +eliminarProducto(ArrayList, int) void
         +procesarItemVenta(ArrayList, Pedido, int, int) double
@@ -107,10 +112,22 @@ classDiagram
     }
 
     class ConsoleView {
+        +mostrarMensaje(String) void
+        +mostrarError(String) void
+        +mostrarAviso(String) void
+        +mostrarExito(String) void
         +mostrarCatalogo(List) void
         +mostrarInactivos(List) void
         +mostrarHistorialPedidos(List) void
         +mostrarReporte(double, double, int) void
+    }
+
+    class MenuController {
+        -ProductoService service
+        -PersistenceService persistence
+        -ConsoleView view
+        -ArrayList~Producto~ inventario
+        +iniciar() void
     }
 
     class StockInsuficienteException {
@@ -129,9 +146,11 @@ classDiagram
     ProductoService ..> Producto : opera
     ProductoService ..> StockInsuficienteException : lanza
     ProductoService ..> ValidacionProductoException : lanza
-    Main ..> ProductoService : coordina
-    Main ..> PersistenceService : coordina
-    Main ..> ConsoleView : visualiza
+    Main ..> MenuController : inicia
+    MenuController "1" --> "1" ProductoService : orquesta
+    MenuController "1" --> "1" PersistenceService : persiste
+    MenuController "1" --> "1" ConsoleView : muestra
+    MenuController "1" o-- "*" Producto : maneja inventario
 ```
 
 ## Licencia
