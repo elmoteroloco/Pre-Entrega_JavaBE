@@ -161,7 +161,7 @@ public class MenuController {
                 int val = Integer.parseInt(input);
                 if (val < min) throw new IllegalArgumentException();
                 return val;
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("\u001B[31mError: Ingrese un numero valido mayor o igual a " + min + "\u001B[0m");
             }
         }
@@ -176,7 +176,7 @@ public class MenuController {
                 double val = Double.parseDouble(input);
                 if (val < min) throw new IllegalArgumentException();
                 return val;
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println("\u001B[31mError: Ingrese un valor numerico valido mayor o igual a " + min + "\u001B[0m");
             }
         }
