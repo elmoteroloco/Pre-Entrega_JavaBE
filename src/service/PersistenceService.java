@@ -41,14 +41,14 @@ public class PersistenceService {
                     boolean activo = datos.length != 6 || Boolean.parseBoolean(datos[5]);
 
                     Producto p = esAlc ? new Bebida(id, nombre, precio, stock, true, activo)
-                                       : new Producto(id, nombre, precio, stock, activo);
+                                        : new Producto(id, nombre, precio, stock, activo);
                     inventario.add(p);
                     if (id > maxId) maxId = id;
                 }
             }
             Producto.setContadorId(maxId);
             return true;
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             System.out.println(RED + "Error al cargar el inventario: " + e.getMessage() + RESET);
             return false;
         }
@@ -113,7 +113,7 @@ public class PersistenceService {
                 }
             }
             return true;
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException e) {
             System.out.println(RED + "Error al cargar pedidos: " + e.getMessage() + RESET);
             return false;
         }
