@@ -49,7 +49,20 @@ public class Producto {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new NombreInvalidoException("El nombre del producto no puede estar vacio.");
         }
-        this.nombre = nombre.trim();
+        this.nombre = normalizarNombre(nombre);
+    }
+
+    private String normalizarNombre(String nombre) {
+        String[] palabras = nombre.trim().toLowerCase().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (String p : palabras) {
+            if (!p.isEmpty()) {
+                sb.append(Character.toUpperCase(p.charAt(0)))
+                    .append(p.substring(1))
+                    .append(" ");
+            }
+        }
+        return sb.toString().trim();
     }
 
     public double getPrecio() {
