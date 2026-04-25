@@ -16,7 +16,6 @@
 
 5_ Implementación del Menú interactivo básico en `Main.java` de acuerdo a la consigna de la actividad práctica:
 
-    > [!Detalle]
     > "Agregar producto" y lógica de "ID único".
     > "Listar productos" con formato de tabla.
     > Búsqueda por ID y por Nombre con uso de "equals".
@@ -29,7 +28,6 @@ ________________________________________________________________________________
 
 8_ Construcción de las clases `Pedido.java` y `LineaPedido.java` en `/src/model`, también se implementa la forma de modelar con "herencia" y "encapsulamiento" (se incluye la clase `Bebida.java` también en `/src/model`) según lo visto en clase utilizando los modificadores de acceso `private` y `protected`; s extiende el `Menú Inventario` para incluir las nuevas funcionalidades y agregar la mecánica correspondiente a la clase `Bebida.java`. Se inicia éste `Registro de Cambios.md`
 
-    > [!Detalle]
     > Se aplica una verificación de existencia del stock solicitado en "Realizar Pedido (Venta)" (consigna).
     > Se crea la excepción personalizada "StockInsuficienteException" (consigna).
     > Cálculos de costo y descuentos automáticos (10% a partir de 50 unidades y 20% a partir de 100, segun consigna).
@@ -45,7 +43,6 @@ ________________________________________________________________________________
 
 10_ Para agregar el concepto y uso de "enums" se establece una lógica completa de 'registro y seguimiento de estado' para los pedidos realizados, creando la entidad `EstadoPedido.java`, el correspondiente "constructor" en `Pedido.java` y los módulos persistentes `pedidos.csv` y `pedidos_detalle.csv` para manejar la relación entre pedidos y productos, su historial y cambios de estado. La mecánica agrega una lógica de "Caja" que reporta ventas y recupera stock en inventario ante las cancelaciones de pedidos:
 
-    > [!Detalle]
     > Se desarrolla un reporte que calcula la recaudación real, basada en pedidos "ENTREGADOS" y ventas 'en espera' basadas en pedidos "PENDIENTES".
     > Se establece la devolución automática de stock al inventario cuando un pedido cambia el estado a "CANCELADO", asegurando que los productos vuelvan a estar disponibles.
     > Se agregan las entradas relacionadas al "Menú de Inventario": "Actualizar Estado de Pedido" y "Reporte de Ventas"
@@ -53,7 +50,6 @@ ________________________________________________________________________________
 
 11_ Para mantener coherencia con los "históricos" durante la eliminación de productos en los listados de pedidos se investiga y resuelve el uso de "borrado lógico" (_soft-delete_), implementándose también una entrada para la re-inserción de un producto "eliminado" con éste procedimiento en el "Menú Inventario".
 
-    > [!Detalle]
     > Se establece un atributo booleano ('activo'/'inactivo') en la clase "Producto" mediante sobrecarga del  "constructor".
     > También se establece un método para la persistencia del estado del booleano en el ".CSV".
     > Se ajusta la inicialización para que el contador de "IDs" retome desde el "valor máximo histórico" en el ".CSV", evitando la reutilización de índices que generaría conflictos en el listado de "Pedidos".
@@ -71,7 +67,6 @@ ________________________________________________________________________________
 
 15_ Realizados test y busqueda de errores con asistencia de inteligencia artificial, se contempla el caso de "inventario vacío" y se agrega funcionalidad para la recarga de los modulos CSV en caso de fallos.
 
-    > [!Detalle]
     > Se agrega la entrada "Recargar Datos desde CSV" al "Menú de Inventario"
 ________________________________________________________________________________________________________________________
 
@@ -83,7 +78,6 @@ ________________________________________________________________________________
 
 18_ Optimización asistida con IA, modularización de persistencia y migración de validaciones a excepciones.
 
-    > [!Detalle]
     > Validaciones de Nombre, Precio y Stock negativos o vacío.
 ________________________________________________________________________________________________________________________
 
