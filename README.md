@@ -1,6 +1,21 @@
 # Sistema de Gestión de Inventario y Pedidos - Pre-Entrega Java
 
-Es una aplicación de consola desarrollada en Java 17 para gestionar un inventario de productos y procesar pedidos de venta. El sistema sigue una arquitectura modular separando la lógica de negocio, la persistencia de datos y la interfaz de usuario.
+Es una aplicación de consola desarrollada en Java 17 para gestionar un inventario de productos y procesar pedidos de venta. El sistema sigue una arquitectura modular de responsabilidad única, separando la lógica de negocio, la persistencia de datos y la interfaz de usuario.
+
+> [!Enlace]
+> [Registro de Cambios >>](changelog.md)
+
+## Índice
+
+- [Sistema de Gestión de Inventario y Pedidos - Pre-Entrega Java](#sistema-de-gestión-de-inventario-y-pedidos---pre-entrega-java)
+  - [Índice](#índice)
+  - [Características principales](#características-principales)
+  - [Tecnologías utilizadas](#tecnologías-utilizadas)
+  - [Estructura del Proyecto](#estructura-del-proyecto)
+  - [Ejecución](#ejecución)
+  - [Diagrama del Sistema](#diagrama-del-sistema)
+  - [Licencia](#licencia)
+  - [Talento Tech](#talento-tech)
 
 ## Características principales
 
@@ -138,14 +153,37 @@ classDiagram
         +ValidacionProductoException(String mensaje)
     }
 
+    class IOException {
+        <<Java Library>>
+    }
+
+    class NombreInvalidoException {
+        +NombreInvalidoException(String mensaje)
+    }
+
+    class PrecioInvalidoException {
+        +PrecioInvalidoException(String mensaje)
+    }
+
+    class StockInvalidoException {
+        +StockInvalidoException(String mensaje)
+    }
+
     Producto <|-- Bebida : Herencia
     Pedido "1" *-- "*" LineaPedido : Composición
     LineaPedido "1" --> "1" Producto : Referencia
     Pedido "1" --> "1" EstadoPedido : Usa
     ProductoService "1" o-- "*" Pedido : Gestiona historial
+    Producto ..> NombreInvalidoException : lanza
+    Producto ..> PrecioInvalidoException : lanza
+    Producto ..> StockInvalidoException : lanza
+    ValidacionProductoException <|-- NombreInvalidoException : Herencia
+    ValidacionProductoException <|-- PrecioInvalidoException : Herencia
+    ValidacionProductoException <|-- StockInvalidoException : Herencia
     ProductoService ..> Producto : opera
     ProductoService ..> StockInsuficienteException : lanza
     ProductoService ..> ValidacionProductoException : lanza
+    PersistenceService ..> IOException : maneja
     Main ..> MenuController : inicia
     MenuController "1" --> "1" ProductoService : orquesta
     MenuController "1" --> "1" PersistenceService : persiste
@@ -156,5 +194,5 @@ classDiagram
 ## Licencia
 Este proyecto está bajo la Licencia MIT. Para más detalles, consultá el archivo LICENSE.
 
----
+## Talento Tech
 Desarrollado como parte de la cursada de Java Backend 26138 como ensayo de estudio, sin fines comerciales - 2026.
