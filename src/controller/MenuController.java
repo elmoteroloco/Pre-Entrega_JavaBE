@@ -30,7 +30,7 @@ public class MenuController {
 
         int opcion = -1;
         while (opcion != 0) {
-            mostrarMenu();
+            view.mostrarMenuPrincipal();
             try {
                 opcion = leerInt("", 0);
                 procesarOpcion(opcion);
@@ -43,22 +43,6 @@ public class MenuController {
             }
         }
         scanner.close();
-    }
-
-    private void mostrarMenu() {
-        System.out.println("\n--- Menú de Inventario ---");
-        System.out.println("1. Listar Productos");
-        System.out.println("2. Agregar Producto");
-        System.out.println("3. Buscar Producto");
-        System.out.println("4. Modificar Producto");
-        System.out.println("5. Eliminar Producto");
-        System.out.println("6. Realizar Pedido (Venta)");
-        System.out.println("7. Listar Pedidos Realizados");
-        System.out.println("8. Actualizar Estado de Pedido");
-        System.out.println("9. Reporte de Ventas");
-        System.out.println("10. Reactivar Producto");
-        System.out.println("0. Salir");
-        System.out.print("Seleccioná una opción: ");
     }
 
     private void procesarOpcion(int opcion) {

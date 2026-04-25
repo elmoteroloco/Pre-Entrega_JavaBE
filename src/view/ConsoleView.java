@@ -28,6 +28,22 @@ public class ConsoleView {
         System.out.println(GREEN + mensaje + RESET);
     }
 
+    public void mostrarMenuPrincipal() {
+        System.out.println("\n--- Menú de Inventario ---");
+        System.out.println("1. Listar Productos");
+        System.out.println("2. Agregar Producto");
+        System.out.println("3. Buscar Producto");
+        System.out.println("4. Modificar Producto");
+        System.out.println("5. Eliminar Producto");
+        System.out.println("6. Realizar Pedido (Venta)");
+        System.out.println("7. Listar Pedidos Realizados");
+        System.out.println("8. Actualizar Estado de Pedido");
+        System.out.println("9. Reporte de Ventas");
+        System.out.println("10. Reactivar Producto");
+        System.out.println("0. Salir");
+        System.out.print("Seleccioná una opción: ");
+    }
+
     public void mostrarCatalogo(List<Producto> inventario) {
         if (inventario.isEmpty()) {
             System.out.println("El inventario esta vacio.");
