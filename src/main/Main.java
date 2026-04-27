@@ -6,11 +6,12 @@ import controller.MenuController;
 
 public class Main {
     public static void main(String[] args) {
-        ProductoService service = new ProductoService();
+        ProductoService productoService = new ProductoService();
+        PedidoService pedidoService = new PedidoService();
         PersistenceService persistence = new PersistenceService();
         ConsoleView view = new ConsoleView();
 
-        MenuController controller = new MenuController(service, persistence, view);
+        MenuController controller = new MenuController(productoService, pedidoService, persistence, view);
         controller.iniciar();
     }
 }

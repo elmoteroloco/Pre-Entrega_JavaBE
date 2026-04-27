@@ -94,3 +94,9 @@ ________________________________________________________________________________
 ________________________________________________________________________________________________________________________
 
 23_ Se mueve el `System.out.println` del "Menú" a un método en `ConsoleView.java.`, se agregan las "excepciones heredadas" actualizando el "Diagrama de Sistema" en la Documentación. Se agrega este "Registro de Cambios" (`changelog.md`) al repositorio y se crea un "Índice" en `Readme.md` (optimización asistida con IA).
+________________________________________________________________________________________________________________________
+
+24_ Se agregan imagenes descriptivas al `Readme.md` y un plano de la estructura del proyecto.
+
+25_ Se modularizan las tareas de la clase `Pedido.java` a `Pedido.service` siguiendo el patrón de responsabilidad única.
+________________________________________________________________________________________________________________________
