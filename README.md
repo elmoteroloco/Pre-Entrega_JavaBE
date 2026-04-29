@@ -1,12 +1,12 @@
-# Sistema de Gestión de Inventario y Pedidos - Pre-Entrega Java
+# Sistema de Gestión de Inventario y Pedidos - Pre-Entrega T.P. Java BE, Comisión 26138 - Talento Tech
 
 Es una aplicación de consola desarrollada en Java 17 para gestionar un inventario de productos y procesar pedidos de venta. El sistema sigue una arquitectura modular de responsabilidad única, separando la lógica de negocio, la persistencia de datos y la interfaz de usuario.
 
-> [Registro de Cambios >>](changelog.md)
+> [>> Registro de Cambios >>](changelog.md)
 
 ## Índice
 
-- [Sistema de Gestión de Inventario y Pedidos - Pre-Entrega Java](#sistema-de-gestión-de-inventario-y-pedidos---pre-entrega-java)
+- [Sistema de Gestión de Inventario y Pedidos - Pre-Entrega T.P. Java BE, Comisión 26138 - Talento Tech](#sistema-de-gestión-de-inventario-y-pedidos---pre-entrega-tp-java-be-comisión-26138---talento-tech)
   - [Índice](#índice)
   - [Características principales](#características-principales)
   - [Estructura del Proyecto](#estructura-del-proyecto)
