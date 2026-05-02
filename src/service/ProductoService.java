@@ -3,6 +3,7 @@ package service;
 import exceptions.*;
 import model.Producto;
 import model.Bebida;
+import model.Cafeteria;
 import model.Pedido;
 import java.util.List;
 
@@ -14,11 +15,11 @@ public class ProductoService {
                 else throw new ValidacionProductoException("Existe un producto inactivo con ese nombre (ID: " + p.getId() + "). Reactivalo desde el menu.");
             }
         }
-        Producto nuevo = esAlc ? new Bebida(nombre, precio, stock, true) : new Producto(nombre, precio, stock);
+        Producto nuevo = esAlc ? new Bebida(nombre, precio, stock, true) : new Cafeteria(nombre, precio, stock);
         inventario.add(nuevo);
     }
 
-    public Producto buscarProductoPorCriterio(List<Producto> inventario, String criterio) {
+    public Producto buscarProducto(List<Producto> inventario, String criterio) {
         for (Producto p : inventario) {
             if (p.getNombre().equalsIgnoreCase(criterio) || String.valueOf(p.getId()).equals(criterio)) {
                 return p;
