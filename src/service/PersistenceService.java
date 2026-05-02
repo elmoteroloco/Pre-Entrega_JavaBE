@@ -41,7 +41,7 @@ public class PersistenceService {
                     boolean activo = datos.length != 6 || Boolean.parseBoolean(datos[5]);
 
                     Producto p = esAlc ? new Bebida(id, nombre, precio, stock, true, activo)
-                                        : new Producto(id, nombre, precio, stock, activo);
+                                        : new Cafeteria(id, nombre, precio, stock, activo);
                     inventario.add(p);
                     if (id > maxId) maxId = id;
                 }

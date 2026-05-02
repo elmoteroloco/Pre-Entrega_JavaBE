@@ -21,4 +21,9 @@ public class Bebida extends Producto {
     public boolean isEsAlcoholica() {
         return esAlcoholica;
     }
+
+    @Override
+    public String getDetalleTipo() {
+        return esAlcoholica ? "Bebida (Alc)" : "Bebida";
+    }
 }
