@@ -3,7 +3,7 @@ package model;
 import exceptions.*;
 import java.util.Objects;
 
-public class Producto {
+public abstract class Producto {
     private static int contadorId = 0;
     protected int id;
     protected String nombre;
@@ -36,6 +36,8 @@ public class Producto {
     public static void setContadorId(int nuevoValor) {
         contadorId = nuevoValor;
     }
+
+    public abstract String getDetalleTipo();
 
     public int getId() {
         return id;
