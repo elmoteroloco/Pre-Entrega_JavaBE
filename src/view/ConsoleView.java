@@ -35,11 +35,11 @@ public class ConsoleView {
         System.out.println("3. Buscar Producto");
         System.out.println("4. Modificar Producto");
         System.out.println("5. Eliminar Producto");
-        System.out.println("6. Realizar Pedido (Venta)");
-        System.out.println("7. Listar Pedidos Realizados");
-        System.out.println("8. Actualizar Estado de Pedido");
-        System.out.println("9. Reporte de Ventas");
-        System.out.println("10. Reactivar Producto");
+        System.out.println("6. Reactivar Producto");
+        System.out.println("7. Realizar Pedido (Venta)");
+        System.out.println("8. Listar Pedidos Realizados");
+        System.out.println("9. Actualizar Estado de Pedido");
+        System.out.println("10. Reporte de Ventas");
         System.out.println("0. Salir");
         System.out.print("Seleccioná una opción: ");
     }
@@ -53,7 +53,7 @@ public class ConsoleView {
         System.out.println("------------------------------------------------------------------");
         for (Producto p : inventario) {
             if (p.isActivo()) {
-                String nombreDisplay = p.getNombre() + (p instanceof Bebida ? " (Alc)" : "");
+                String nombreDisplay = p.getNombre() + " [" + p.getDetalleTipo() + "]";
                 System.out.printf("%-5d | %-25s | $%-11.2f | %-8d%n", p.getId(), nombreDisplay, p.getPrecio(), p.getStock());
             }
         }
@@ -68,7 +68,8 @@ public class ConsoleView {
                     System.out.println("------------------------------------------------------------------");
                     hayInactivos = true;
                 }
-                System.out.printf("%-5d | %-25s | $%-11.2f | %-8d%n", p.getId(), p.getNombre(), p.getPrecio(), p.getStock());
+                String nombreDisplay = p.getNombre() + " [" + p.getDetalleTipo() + "]";
+                System.out.printf("%-5d | %-25s | $%-11.2f | %-8d%n", p.getId(), nombreDisplay, p.getPrecio(), p.getStock());
             }
         }
         if (!hayInactivos) {

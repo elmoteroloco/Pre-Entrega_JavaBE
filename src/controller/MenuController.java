@@ -54,14 +54,14 @@ public class MenuController {
             case 3 -> gestionarBusqueda();
             case 4 -> gestionarModificacion();
             case 5 -> gestionarBajaProducto();
-            case 6 -> gestionarVenta();
-            case 7 -> view.mostrarHistorialPedidos(pedidoService.getHistorialPedidos());
-            case 8 -> gestionarCambioEstado();
-            case 9 -> {
+            case 6 -> gestionarReactivacion();
+            case 7 -> gestionarVenta();
+            case 8 -> view.mostrarHistorialPedidos(pedidoService.getHistorialPedidos());
+            case 9 -> gestionarCambioEstado();
+            case 10 -> {
                 double[] datos = pedidoService.calcularDatosReporte();
                 view.mostrarReporte(datos[0], datos[1], (int) datos[2]);
             }
-            case 10 -> gestionarReactivacion();
         }
     }
 
@@ -83,7 +83,7 @@ public class MenuController {
         view.mostrarCatalogo(inventario);
         System.out.print("Ingresar Nombre o ID para buscar: ");
         String crit = scanner.nextLine();
-        Producto pBuscado = productoService.buscarProductoPorCriterio(inventario, crit);
+        Producto pBuscado = productoService.buscarProducto(inventario, crit);
         if (pBuscado != null) view.mostrarMensaje("Encontrado: " + pBuscado);
         else view.mostrarError("No se encontro el producto.");
     }
