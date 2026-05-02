@@ -11,7 +11,7 @@ Es una aplicación de consola desarrollada en Java 17 para gestionar un inventar
   - [Características principales](#características-principales)
   - [Estructura del Proyecto](#estructura-del-proyecto)
   - [Ejecución](#ejecución)
-  - [Diagrama del Sistema](#diagrama-del-sistema)
+  - [Diagrama de Clases del Sistema](#diagrama-de-clases-del-sistema)
   - [Licencia](#licencia)
   - [Talento Tech](#talento-tech)
 
@@ -29,8 +29,8 @@ _____________________________________
 **Arquitectura Basada en POO:**
 
     > **Encapsulamiento** (validaciones en setters)
-    > **Herencia** (clase `Bebida`)
-    > **Polimorfismo** (sobrescritura de `toString` y `equals`)
+    > **Herencia** (clases `Bebida` y `Cafeteria`;  jerarquía de "exceptions")
+    > **Polimorfismo** (se aplica en relación al booleano que selecciona las clases `Bebida` y `Cafeteria` y en los @Override de `toString` y `equals`)
     > **Sobrecarga** (múltiples constructores para creación y persistencia).
 
 
@@ -38,25 +38,40 @@ _____________________________________
   <img src="src\assets\validacionSetter.png" alt="Aplicación de Encapsulamiento" width="500">
   <br><em>Encapsulamiento</em>
 </p>
-_____________________________________
+______________________________________________________
 
 <p>
-  <img src="src\assets\herencia1.png" alt="Aplicación de Herencia" width="300">
-  <br><em>Herencia</em>
+  <img src="src\assets\herencia1.png" alt="Aplicación de Herencia en clases Bebida y Cafeteria" width="500">
+  <br><em>Herencia en clases Bebida y Cafeteria</em>
+
+<br>
+
+  <img src="src\assets\herencia2.png" alt="Aplicación de Herencia en jerarquía de excepciones" width="500">
+  <br><em>Herencia en jerarquía de excepciones</em>
 </p>
-_____________________________________
+______________________________________________________
 
 <p>
-  <img src="src\assets\polimorfismo.png" alt="Aplicación de Polimorfismo" width="500">
-  <br><em>Polimorfismo</em>
+  <img src="src\assets\polimorfismo1.png" alt="Aplicación de Polimorfismo en clases Bebida y Cafeteria" width="500">
+  <br><em>Polimorfismo en clases Bebida y Cafeteria</em>
+
+<br>
+
+  <img src="src\assets\polimorfismo2.png" alt="Aplicación de Polimorfismo en `toString` y `equals`" width="500">
+  <br><em>Polimorfismo en `toString` y `equals`</em>
 </p>
-_____________________________________
+_____________________________________________________
 
 <p>
-  <img src="src\assets\sobrecargaConstructor.png" alt="Aplicación de Sobrecarga" width="500">
+  <img src="src\assets\sobrecargaMetodo.png" alt="Aplicación de Sobrecarga de Métodos" width="500">
+  <br><em>Sobrecarga de Métodos</em>
+
+<br>
+
+  <img src="src\assets\sobrecargaConstructor.png" alt="Aplicación de Sobrecarga de Constructores" width="500">
   <br><em>Sobrecarga de Constructores</em>
 </p>
-_____________________________________
+_____________________________________________________
 
 
 **Sistema de Pedidos y Lógica de Negocio:** Gestión de pedidos con actualización de estado interactiva, cálculo automático de descuentos progresivos (10% y 20%) y recupero autonomo de stock ante cancelación.
@@ -106,60 +121,68 @@ _____________________________________
 ```text
 /Pre-Entrega_JavaBE"
 |
-|___ "/bin"   # (innecesario para el contexto)
-|
 |___ "/src"
-	|
-	|___ "/assets"
-	|	|
-	|	|"herencia1.png"
-	|	|"logicaPedidos.png"
-	|	|"menuCRUD.png"
-	|	|"polimorfismo.png"
-	|	|"sobrecargaConstructor.png"
-	|	|"validacionSetter.png"
-	|
-	|___ "/controller"
-	|	|
-	|	|"MenuController.java"
-	|
-	|___ "/exceptions"
-	|	|
-	|	|"NombreInvalidoException.java"
-	|	|"PrecioInvalidoException.java"
-	|	|"StockInsuficienteException.java"
-	|	|"StockInvalidoException.java"
-	|	|"ValidacionProductoException.java"
-	|
-	|___ "/main"
-	|	|
-	|	|"Main.java"
-	|
-	|___ "/model"
-	|	|
-	|	|"Bebida.java"
-	|	|"EstadoPedido.java"
-	|	|"LineaPedido.java"
-	|	|"Pedido.java"
-	|	|"Producto.java"
-	|
-	|___ "/service"
-	|	|
-	|	|"PedidoService.java"
-	|	|"PersistenceService.java"
-	|	|"ProductoService.java"
-	|
-	|___ "/view"
-	|	|
-	|	|"ConsoleView.java"
-	|
-	|___".gitignore"
-		"changelog.md"
-		"inventario.csv"
-		"LICENSE"
-		"pedidos.csv"
-		"pedidos_detalle.csv"
-		"README.md"
+|	|
+|	|___ "/assets"
+|	|	|
+|   |	|___"enum1.png"
+|	|	|___"enum2.png"
+|	|	|___"herencia1.png"
+|	|	|___"herencia2.png"
+|	|	|___"logicaPedidos.png"
+|   |	|___"menuCRUD.png"
+|	|	|___"nioPersist.png"
+|	|	|___"polimorfismo1.png"
+|	|	|___"polimorfismo2.png"
+|	|	|___"sobrecargaConstructor.png"
+|	|	|___"sobrecargaMetodo.png"
+|	|	|___"ux1.png"
+|	|	|___"ux2.png"
+|	|	|___"validacionSetter.png"
+|	|
+|	|___ "/controller"
+|	|	|
+|	|	|___"MenuController.java"
+|	|
+|	|___ "/exceptions"
+|	|	|
+|	|	|___"NombreInvalidoException.java"
+|	|	|___"PrecioInvalidoException.java"
+|	|	|___"StockInsuficienteException.java"
+|	|	|___"StockInvalidoException.java"
+|	|	|___"ValidacionProductoException.java"
+|	|
+|	|___ "/main"
+|	|	|
+|	|	|___"Main.java"
+|	|
+|	|___ "/model"
+|	|	|
+|	|	|___"Bebida.java"
+|	|	|___"Cafeteria.java"
+|	|	|___"EstadoPedido.java"
+|	|	|___"LineaPedido.java"
+|	|	|___"Pedido.java"
+|	|	|___"Producto.java"
+|	|
+|	|___ "/service"
+|	|	|
+|	|	|___"PedidoService.java"
+|	|	|___"PersistenceService.java"
+|	|	|___"ProductoService.java"
+|	|
+|	|___ "/view"
+|		|
+|		|___"ConsoleView.java"
+|
+|___".gitignore"
+|___"changelog.md"
+|___"inventario.csv"
+|___"LICENSE"
+|___"pedidos.csv"
+|___"pedidos_detalle.csv"
+|___"README.md"
+
 ```
 
 ## Ejecución
@@ -176,22 +199,29 @@ javac -d bin src/**/*.java
 java -cp bin main.Main
 ```
 
-## Diagrama del Sistema
+## Diagrama de Clases del Sistema
 
 ```mermaid
 classDiagram
     class Producto {
+        <<abstract>>
         #int id
         #String nombre
         #double precio
         #int stock
         #boolean activo
+        +getDetalleTipo() String*
         +toString() String
         +equals(Object) boolean
     }
 
     class Bebida {
         -boolean esAlcoholica
+        +getDetalleTipo() String
+    }
+
+    class Cafeteria {
+        +getDetalleTipo() String
     }
 
     class Pedido {
@@ -227,7 +257,7 @@ classDiagram
 
     class ProductoService {
         +agregarProducto(List, String, double, int, boolean) void
-        +buscarProductoPorCriterio(List, String) Producto
+        +buscarProducto(List, String) Producto
         +buscarProducto(List, int) Producto
         +modificarProducto(List, int, String, double, int) void
         +eliminarProducto(List, int) void
@@ -247,6 +277,7 @@ classDiagram
         +mostrarError(String) void
         +mostrarAviso(String) void
         +mostrarExito(String) void
+        +mostrarMenuPrincipal() void
         +mostrarCatalogo(List) void
         +mostrarInactivos(List) void
         +mostrarHistorialPedidos(List) void
@@ -260,6 +291,7 @@ classDiagram
         -ConsoleView view
         -ArrayList~Producto~ inventario
         +iniciar() void
+        +CancelarException
     }
 
     class StockInsuficienteException {
@@ -268,6 +300,10 @@ classDiagram
 
     class ValidacionProductoException {
         +ValidacionProductoException(String mensaje)
+    }
+
+    class RuntimeException {
+        <<Java Library>>
     }
 
     class IOException {
@@ -287,6 +323,7 @@ classDiagram
     }
 
     Producto <|-- Bebida : Herencia
+    Producto <|-- Cafeteria : Herencia
     Pedido "1" *-- "*" LineaPedido : Composición
     LineaPedido "1" --> "1" Producto : Referencia
     Pedido "1" --> "1" EstadoPedido : Usa
@@ -297,6 +334,8 @@ classDiagram
     ValidacionProductoException <|-- NombreInvalidoException : Herencia
     ValidacionProductoException <|-- PrecioInvalidoException : Herencia
     ValidacionProductoException <|-- StockInvalidoException : Herencia
+    RuntimeException <|-- ValidacionProductoException : Herencia
+    RuntimeException <|-- CancelarException : Herencia
     ProductoService ..> Producto : opera
     ProductoService ..> StockInsuficienteException : lanza
     ProductoService ..> ValidacionProductoException : lanza

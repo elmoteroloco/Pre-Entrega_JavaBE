@@ -100,3 +100,8 @@ ________________________________________________________________________________
 
 25_ Se modularizan las tareas de la clase `Pedido.java` a `Pedido.service` siguiendo el patrón de responsabilidad única.
 ________________________________________________________________________________________________________________________
+
+26_ Se establece la clase "Producto" como "abstract" y se crea una nueva clase "Cafeteria" para incluir el modificador y robustecer la aplicación.
+________________________________________________________________________________________________________________________
+
+27_ Reorganización estética y funcional del menú principal para agrupar las operaciones de inventario (CRUD completo) antes de las operaciones de venta y reportes, mejorando la coherencia del flujo de usuario.
