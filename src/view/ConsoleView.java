@@ -1,7 +1,6 @@
 package view;
 
 import model.Producto;
-import model.Bebida;
 import model.Pedido;
 import model.LineaPedido;
 import java.util.List;
